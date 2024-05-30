@@ -3,6 +3,8 @@ import streamlit as st
 from openai import OpenAI
 import openai
 
+
+
 # OpenAI API 키 입력 받기
 def get_openai_api_key():
     api_key = st.session_state.get("api_key", "")
@@ -16,14 +18,13 @@ def init_openai():
     openai.api_key = api_key
 
 # DALL-E로 이미지 생성
-@st.cache
 def generate_image(prompt):
     response = openai.Image.create(
-        engine="dalle",
-        prompt=prompt,
-        max_images=1
+        model="text-davinci-003",
+        prompts=[prompt],
+        max_tokens=50
     )
-    return response.images[0].url
+    return response['output']['url']
 
 # 새 페이지 설정
 def dall_e_page():
