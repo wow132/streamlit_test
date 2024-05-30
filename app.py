@@ -1,5 +1,6 @@
 pip install streamlit openai
 import streamlit as st
+from openai import OpenA
 import openai
 
 # OpenAI API 키 입력 받기
