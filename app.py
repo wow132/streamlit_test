@@ -2,7 +2,7 @@
 import streamlit as st
 from openai import OpenAI
 import openai
-pip install --upgrade openai
+
 # OpenAI API 키 입력 받기
 def get_openai_api_key():
     api_key = st.session_state.get("api_key", "")
