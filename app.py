@@ -1,6 +1,6 @@
 
 import streamlit as st
-from openai import OpenA
+from openai import OpenAI
 import openai
 
 # OpenAI API 키 입력 받기
