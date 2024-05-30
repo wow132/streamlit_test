@@ -15,33 +15,41 @@ def init_openai():
     api_key = get_openai_api_key()
     openai.api_key = api_key
 
-# 질문에 대한 GPT-3.5 Turbo 응답 생성
-def generate_response(question):
-    response = openai.Completion.create(
-        engine="text-davinci-003",  # GPT-3.5 Turbo 엔진 선택
-        prompt=question,
-        max_tokens=150,  # 응답의 최대 길이 설정
-        n=1,
-        stop=None,
-        temperature=0.7
+# DALL-E로 이미지 생성
+@st.cache
+def generate_image(prompt):
+    response = openai.Image.create(
+        engine="dalle",
+        prompt=prompt,
+        max_images=1
     )
-    return response.choices[0].text.strip()
+    return response.images[0].url
 
-# Streamlit 애플리케이션 설정
-def main():
-    st.title("GPT-3.5 Turbo Q&A Web App")
+# 새 페이지 설정
+def dall_e_page():
+    st.title("DALL-E Image Generation")
     
     init_openai()  # OpenAI 초기화
     
-    # 사용자 질문 입력 받기
-    question = st.text_area("Enter your question:")
+    # 사용자 프롬프트 입력 받기
+    prompt = st.text_area("Enter your prompt:")
     
-    if st.button("Get Answer"):
-        if question:
-            answer = generate_response(question)
-            st.write("Answer:", answer)
+    if st.button("Generate Image"):
+        if prompt:
+            image_url = generate_image(prompt)
+            st.image(image_url, caption="Generated Image", use_column_width=True)
         else:
-            st.warning("Please enter a question.")
+            st.warning("Please enter a prompt.")
+
+# 메인 애플리케이션
+def main():
+    st.sidebar.title("Navigation")
+    selection = st.sidebar.radio("Go to", ["Q&A", "DALL-E Image Generation"])
+
+    if selection == "Q&A":
+        qna_page()
+    elif selection == "DALL-E Image Generation":
+        dall_e_page()
 
 if __name__ == "__main__":
     main()
