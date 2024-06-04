@@ -1,37 +1,56 @@
+
 import streamlit as st
+from openai import OpenAI
 import openai
 
+
+
 # OpenAI API 키 입력 받기
-api_key = st.sidebar.text_input("Enter your OpenAI API Key", type="password", key="api_key")
+def get_openai_api_key():
+    api_key = st.session_state.get("api_key", "")
+    api_key = st.text_input("Enter your OpenAI API Key:", value=api_key, type="password")
+    st.session_state["api_key"] = api_key
+    return api_key
 
 # OpenAI API 초기화
-openai.api_key = api_key
+def init_openai():
+    api_key = get_openai_api_key()
+    openai.api_key = api_key
 
-# 사용자의 질문을 입력 받아 GPT-3.5-Turbo 모델의 응답을 출력하는 함수 정의
-@st.cache
-def generate_response(question):
-    response = openai.Completion.create(
-        engine="text-davinci-003",
-        prompt=question,
+# DALL-E로 이미지 생성
+def generate_image(prompt):
+    response = openai.Image.create(
+        model="text-davinci-003",
+        prompts=[prompt],
         max_tokens=50
     )
-    return response.choices[0].text.strip()
+    return response['output']['url']
 
-# 메인 Streamlit 애플리케이션
+# 새 페이지 설정
+def dall_e_page():
+    st.title("DALL-E Image Generation")
+    
+    init_openai()  # OpenAI 초기화
+    
+    # 사용자 프롬프트 입력 받기
+    prompt = st.text_area("Enter your prompt:")
+    
+    if st.button("Generate Image"):
+        if prompt:
+            image_url = generate_image(prompt)
+            st.image(image_url, caption="Generated Image", use_column_width=True)
+        else:
+            st.warning("Please enter a prompt.")
+
+# 메인 애플리케이션
 def main():
-    st.title("GPT-3.5 Turbo Web App")
+    st.sidebar.title("Navigation")
+    selection = st.sidebar.radio("Go to", ["Q&A", "DALL-E Image Generation"])
 
-    # 사용자에게 질문 입력 받기
-    question = st.text_input("Enter your question here:")
-
-    # 질문이 입력되었을 때만 답변 생성
-    if question:
-        # GPT-3.5-Turbo 모델을 사용하여 응답 생성
-        response = generate_response(question)
-        
-        # 생성된 응답 출력
-        st.write("AI's response:")
-        st.write(response)
+    if selection == "Q&A":
+        qna_page()
+    elif selection == "DALL-E Image Generation":
+        dall_e_page()
 
 if __name__ == "__main__":
     main()
