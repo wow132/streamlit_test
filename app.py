@@ -11,28 +11,7 @@ taste_preference = st.selectbox("어떤 맛을 선호하나요?", ["매운 맛",
 main_ingredient = st.selectbox("주요 재료는 무엇을 선호하나요?", ["고기", "해산물", "채소", "곡류"])
 
 # 추천 음식을 선택하도록 유도
-if food_type == "한식":
-    if taste_preference == "매운 맛":
-        if main_ingredient == "고기":
-            prompti = "매운 돼지 불고기"
-        elif main_ingredient == "해산물":
-            prompti = "매운 해물 찌개"
-        elif main_ingredient == "채소":
-            prompti = "매운 채소 비빔밥"
-        else:
-            prompti = "매운 떡볶이"
-    elif taste_preference == "단 맛":
-        if main_ingredient == "고기":
-            prompti = "불고기"
-        elif main_ingredient == "해산물":
-            prompti = "간장 새우"
-        elif main_ingredient == "채소":
-            prompti = "잡채"
-        else:
-            prompti = "호떡"
-    # 기타 맛과 재료에 대한 추천을 추가할 수 있습니다
-else:
-    prompti = f"{food_type} {taste_preference} {main_ingredient}"
+
 
 @st.cache_data()
 def draw(prompt):
