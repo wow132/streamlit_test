@@ -8,7 +8,7 @@ prompti = st.text_input("키워드")
 def food_recommendation():
     st.title("음식 추천기")
     
-    st.write("음식을 추천받고 싶으신가요? 몇 가지 질문에 답해주세요!")
+    st.text_input("음식을 추천받고 싶으신가요? 몇 가지 질문에 답해주세요!")
     
     craving = st.selectbox("지금 먹고 싶은 음식의 유형을 선택하세요:", ["Salty", "Sweet", "Not sure"])
     meal_type = st.selectbox("어느 식사 시간에 대한 추천을 원하시나요?", ["Breakfast", "Lunch", "Dinner"])
