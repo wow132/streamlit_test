@@ -5,9 +5,6 @@ apikey = st.text_input("api key를 입력하세요", type="password")
 
 st.header("음식 메뉴 추천")
 prompti = st.text_input("키워드")
-def food_recommendation():
-    st.title("음식 추천기")
-    
 
 @st.cache_data()
 def draw(prompt):
