@@ -1,3 +1,6 @@
+pip install beautifulsoup4
+pip install beautifulsoup4 requests
+
 import streamlit as st
 from openai import OpenAI
 
