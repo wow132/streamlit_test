@@ -3,13 +3,22 @@ from openai import OpenAI
 import requests
 from bs4 import BeautifulSoup
 
+# DALL-E를 사용하여 이미지를 생성하는 함수
 def draw(prompt):
     response = client.images.generate(model="dall-e-3", prompt=prompt)
     image_url = response.data[0].url
     image = f"![alt text]({image_url})"
     return image
 
-apikey = st.text_input("api key를 입력하세요", type="password")
+# URL에서 데이터를 가져와 텍스트로 변환하는 함수
+def download_and_extract_text(url):
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    text = soup.get_text(separator=' ', strip=True)
+    return text
+
+# Streamlit 앱의 헤더와 입력 폼
+apikey = st.text_input("API key를 입력하세요", type="password")
 
 if apikey:
     client = OpenAI(api_key=apikey)
@@ -17,73 +26,21 @@ if apikey:
     prompti = st.text_input("키워드")
 
     if st.button("start"):
+        # 지정된 URL에서 텍스트 데이터를 추출
+        url = "https://www.diningcode.com/list.dc?query=%EA%B2%BD%EC%84%B1%EB%8C%80%EB%B6%80%EA%B2%BD%EB%8C%80&order=r_score"
+        extracted_text = download_and_extract_text(url)
+
+        # OpenAI API를 사용하여 추천 음식 생성
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": f'{prompti}와 관련된 음식 한가지를 추천해줘'},
+                {"role": "user", "content": f'{prompti}와 관련된 음식 한가지를 추천해줘. 여기 텍스트를 참고해: {extracted_text}'},
             ]
         )
         r = response.choices[0].message.content
         st.markdown(r)
+
+        # DALL-E를 사용하여 이미지 생성
         img = draw(r)
         st.markdown(img)
-
-    def download_and_save(url, filename):
-        r = requests.get(url)
-        soup = BeautifulSoup(r.text, 'html.parser')
-        text = soup.get_text(separator=' ', strip=True)
-        with open(filename, 'w') as fo:
-            fo.write(text)
-
-    url1 = "https://www.diningcode.com/list.dc?query=%EA%B2%BD%EC%84%B1%EB%8C%80%EB%B6%80%EA%B2%BD%EB%8C%80&order=r_score" # 광안대교
-    filename1 = 'diamond_bridge.txt'
-    download_and_save(url1, filename1)
-
-    url2 = "https://www.diningcode.com/list.dc?query=%EA%B2%BD%EC%84%B1%EB%8C%80%EB%B6%80%EA%B2%BD%EB%8C%80&order=r_score" # 부산광역시
-    filename2 = 'busan.txt'
-    download_and_save(url2, filename2)
-
-    with open(filename2) as fi:
-        text = fi.read()
-
-    vector_store = client.beta.vector_stores.create(name="BUSAN")
-
-    file_paths = [filename1, filename2]
-    file_streams = [open(path, "rb") for path in file_paths]
-
-    file_batch = client.beta.vector_stores.file_batches.upload_and_poll(
-        vector_store_id=vector_store.id,
-        files=file_streams
-    )
-
-    if st.button("start assistant"):
-        assistant = client.beta.assistants.create(
-            instructions="당신은 부경대 맞집 추천가입니다. 첨부 파일의 정보를 이용해 응답하세요.",
-            model="gpt-4-turbo-preview",
-            tools=[{"type": "file_search"}],
-            tool_resources={
-                "file_search": {
-                    "vector_store_ids": [vector_store.id]
-                }
-            }
-        )
-
-        thread = client.beta.threads.create(
-            messages=[
-                {
-                    "role": "user",
-                    "content": "맛집 추천",
-                }
-            ]
-        )
-
-        run = client.beta.threads.runs.create_and_poll(
-            thread_id=thread.id,
-            assistant_id=assistant.id
-        )
-
-        thread_messages = client.beta.threads.messages.list(thread.id, run_id=run.id)
-
-        for msg in thread_messages.data:
-            st.write(f"{msg.role}: {msg.content[0].text.value}")
