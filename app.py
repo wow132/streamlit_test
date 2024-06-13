@@ -27,7 +27,7 @@ if apikey:
 
     if st.button("start"):
         # 지정된 URL에서 텍스트 데이터를 추출
-        url = "https://www.diningcode.com/list.dc?query=%EA%B2%BD%EC%84%B1%EB%8C%80%EB%B6%80%EA%B2%BD%EB%8C%80&order=r_score"
+        url = "https://blog.naver.com/dodoti/223136463284"
         extracted_text = download_and_extract_text(url)
 
         # OpenAI API를 사용하여 추천 음식 생성
