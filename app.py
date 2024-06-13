@@ -40,7 +40,7 @@ if apikey:
     filename1 = 'diamond_bridge.txt'
     download_and_save(url1, filename1)
 
-    url2 = "https://ko.wikipedia.org/wiki/%EB%B6%80%EC%82%B0%EA%B4%91%EC%97%AD%EC%8B%9C" # 부산광역시
+    url2 = "https://www.diningcode.com/list.dc?query=%EA%B2%BD%EC%84%B1%EB%8C%80%EB%B6%80%EA%B2%BD%EB%8C%80&order=r_score" # 부산광역시
     filename2 = 'busan.txt'
     download_and_save(url2, filename2)
 
