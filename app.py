@@ -59,7 +59,7 @@ file_batch = client.beta.vector_stores.file_batches.upload_and_poll(
   vector_store_id=vector_store.id,
   files=file_streams
 )
-
+if st.button("start"):
 assistant = client.beta.assistants.create(
   instructions="당신은 부경대 맞집 추천가입니다. 첨부 파일의 정보를 이용해 응답하세요.",
   model="gpt-4-turbo-preview",
